@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import {createPersonAsync } from './peopleSlice';
 
 
-function PersonForm() {
+export function PersonForm() {
     //pass dispatch through props?
     const dispatch = useDispatch();
     const [fname, setFName] = useState('');
@@ -43,14 +43,14 @@ function PersonForm() {
             <input
             type='text'
             className='form-control text-start'
-            name='fnameinput'
+            name='lnameinput'
             value={lname}
             onChange={(e) => setLName(e.target.value)}
             />
             <input
             type='text'
             className='form-control text-start'
-            name='fnameinput'
+            name='eMailinput'
             value={fname}
             onChange={(e) => setEmail(e.target.value)}
             />
@@ -64,4 +64,4 @@ function PersonForm() {
 
 }
 
-export default PersonForm();
+// export default PersonForm();
