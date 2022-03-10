@@ -42,7 +42,7 @@ export async function destroyPerson(payload: PersonDeleteData) {
         body: JSON.stringify({
             person,
         }),
-    }).then((response) => response.json)
+    }).then((response) => response.json())
     .catch((err) =>  {
         console.error("Error: ", err);
         return {} as PeopleState;
