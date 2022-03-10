@@ -77,6 +77,6 @@ export const peopleSlice = createSlice({
 export const {} = peopleSlice.actions
 
 export const selectPerson = (state: RootState) => state.people.person;
-export const selectStatus = (state: RootState) => state.people.person;
+export const selectStatus = (state: RootState) => state.people.status;
 
 export default peopleSlice.reducer;
