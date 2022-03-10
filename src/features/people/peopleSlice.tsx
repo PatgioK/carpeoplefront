@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import produce from "immer";
 import { RootState } from "../../app/store";
-import { fetchPeople, createPerson } from "./peopleAPI";
+import { fetchPeople, createPerson, destroyPerson } from "./peopleAPI";
 
 export enum Statuses {
   Initial = "Not Fetched",
@@ -30,6 +30,19 @@ export interface PersonFormData{
         lastname: string;
         email: string;
     }
+}
+
+export interface PersonDeleteData {
+    person: {
+        person_id?: number
+    }
+
+}
+
+export interface PersonUpdateData {
+    person_id: number;
+    person: PersonState
+
 }
 
 export interface PeopleState {
@@ -68,6 +81,14 @@ export const createPersonAsync = createAsyncThunk(
     }
 )
 
+export const destroyPersonAsync = createAsyncThunk(
+    'people/destroyPerson',
+    async (payload: PersonDeleteData) => {
+        const response = await destroyPerson(payload);
+
+        return response;
+    }
+)
 
 // TODO
 // all using immer, not sure if correct way
@@ -115,7 +136,25 @@ export const peopleSlice = createSlice({
         return produce(state, (draftState) => {
           draftState.status = Statuses.Error;
         });
-      });
+      })
+
+      //Destroy
+      .addCase(destroyPersonAsync.pending, (state) => {
+        return produce(state, (draftState) => {
+          draftState.status = Statuses.Loading;
+        });
+      })
+      .addCase(destroyPersonAsync.fulfilled, (state, action) => {
+        return produce(state, (draftState) => {
+            draftState.person = action.payload;
+          draftState.status = Statuses.UpToDate;
+        });
+      })
+      .addCase(destroyPersonAsync.rejected , (state) => {
+        return produce(state, (draftState) => {
+          draftState.status = Statuses.Error;
+        });
+      })
   },
 });
 

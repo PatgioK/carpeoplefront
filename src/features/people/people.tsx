@@ -32,8 +32,12 @@ function People() {
       <PersonForm />
       
       {people && people.length > 0 && people.map(person => {
-        let {firstname, lastname, email, id} = person;
-        return <Person key={person.id} {...person}/>
+        return <div key={person.id}>
+          <Person
+           dispatch={dispatch} 
+           person={person}/>
+
+          </div>
       })}
       </div></>
   }
