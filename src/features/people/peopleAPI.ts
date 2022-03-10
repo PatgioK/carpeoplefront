@@ -10,7 +10,7 @@ export async function fetchPeople() {
         },
     }).then((response) => response.json())
     .catch((error) => {
-        console.log("Error: ", error);
+        console.error("Error: ", error);
         return {} as PeopleState;
     })
 }

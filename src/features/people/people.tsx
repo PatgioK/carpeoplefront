@@ -1,14 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { selectPerson, fetchPersonAsync, Statuses, selectStatus } from "./peopleSlice";
 import Person from './person';
+import { PersonState } from "./peopleSlice";
 
 function People() {
-  const [PeopleList, setPeople] = useState([0]);
-  return (
-    <div className="personcontainer">
-      <h1>people container</h1>
-      {PeopleList.map((peep, peepidx) => {
-        return <Person key={peepidx} personData={peep} />
+  //usestate just to render containers for now
+  const [PeopleList, setPeopleList] = useState([0]);
+
+  const people = useAppSelector(selectPerson);
+  const status = useAppSelector(selectStatus);
+
+
+  // workaround: using normal dispatch, useAppDispatch cant be used in callback
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchPersonAsync());
+  }, [dispatch])
+
+  let contents;
+
+  if(status !== Statuses.UpToDate) {
+    contents = <div>{status}</div>
+  } else {
+    contents = <div className="personcontainer">
+      <h3>{status}</h3>
+      {people && people.length > 0 && people.map(person => {
+        let {firstname, lastname, email, id} = person;
+        return <Person key={person.id} {...person}/>
       })}
+      </div>
+  }
+
+  return ( <div>
+    {contents}
     </div>
   );
 }

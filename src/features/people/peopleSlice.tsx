@@ -53,6 +53,7 @@ export const fetchPersonAsync = createAsyncThunk(
 
 // TODO
 // all using immer, not sure if correct way
+// unit test this
 export const peopleSlice = createSlice({
   name: "person",
   initialState,
@@ -69,13 +70,14 @@ export const peopleSlice = createSlice({
         });
       })
 
-      .addCase(fetchPersonAsync.fulfilled, (state) => {
+      .addCase(fetchPersonAsync.fulfilled, (state, action) => {
         return produce(state, (draftState) => {
+            draftState.person = action.payload;
           draftState.status = Statuses.UpToDate;
         });
       })
 
-      .addCase(fetchPersonAsync.pending, (state) => {
+      .addCase(fetchPersonAsync.rejected , (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Error;
         });
@@ -83,6 +85,9 @@ export const peopleSlice = createSlice({
   },
 });
 
+// actions for frontend that dont really effect backend
+// eg: how data sorted in frontend
+//export const {setSortDirection} = peopleSlice.actions;
 export const {} = peopleSlice.actions;
 
 export const selectPerson = (state: RootState) => state.people.person;
