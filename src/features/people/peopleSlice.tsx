@@ -1,7 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import produce from "immer";
 import { RootState } from "../../app/store";
-import { fetchPeople, createPerson, destroyPerson } from "./peopleAPI";
+import {
+  fetchPeople,
+  createPerson,
+  updatePerson,
+  destroyPerson,
+} from "./peopleAPI";
 
 export enum Statuses {
   Initial = "Not Fetched",
@@ -11,7 +16,7 @@ export enum Statuses {
   Error = "Error",
 }
 
-// TODO: change so dates export as json 
+// TODO: change so dates export as json
 // dates are set to any, idk how to fix error yet I know this is not right lol
 
 export interface PersonState {
@@ -23,26 +28,24 @@ export interface PersonState {
   updated_at?: any;
 }
 
-export interface PersonFormData{
-    person: {
-        id? :string;
-        firstname: string;
-        lastname: string;
-        email: string;
-    }
+export interface PersonFormData {
+  person: {
+    id?: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+  };
 }
 
 export interface PersonDeleteData {
-    person: {
-        person_id?: number
-    }
-
+  person: {
+    person_id?: number;
+  };
 }
 
 export interface PersonUpdateData {
-    person_id: number;
-    person: PersonState
-
+  person_id: number;
+  person: PersonState;
 }
 
 export interface PeopleState {
@@ -73,37 +76,44 @@ export const fetchPersonAsync = createAsyncThunk(
 );
 
 export const createPersonAsync = createAsyncThunk(
-    'people/createPerson',
-    async (payload: PersonFormData) => {
-        const response = await createPerson(payload);
+  "people/createPerson",
+  async (payload: PersonFormData) => {
+    const response = await createPerson(payload);
 
-        return response;
-    }
-)
+    return response;
+  }
+);
+export const updatePersonAsync = createAsyncThunk(
+  "people/updatePerson",
+  async (payload: PersonFormData) => {
+    const response = await updatePerson(payload);
+
+    return response;
+  }
+);
 
 export const destroyPersonAsync = createAsyncThunk(
-    'people/destroyPerson',
-    async (payload: PersonDeleteData) => {
-        const response = await destroyPerson(payload);
+  "people/destroyPerson",
+  async (payload: PersonDeleteData) => {
+    const response = await destroyPerson(payload);
 
-        return response;
-    }
-)
-
+    return response;
+  }
+);
 // TODO
 // all using immer, not sure if correct way
 // unit test this
 export const peopleSlice = createSlice({
   name: "person",
   initialState,
-  
+
   //Synchronous actions from rails frontend?
   reducers: {},
 
   //Async actions
   extraReducers: (builder) => {
     builder
-    /** fetches */
+      /** fetches */
       .addCase(fetchPersonAsync.pending, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Loading;
@@ -111,16 +121,16 @@ export const peopleSlice = createSlice({
       })
       .addCase(fetchPersonAsync.fulfilled, (state, action) => {
         return produce(state, (draftState) => {
-            draftState.person = action.payload;
+          draftState.person = action.payload;
           draftState.status = Statuses.UpToDate;
         });
       })
-      .addCase(fetchPersonAsync.rejected , (state) => {
+      .addCase(fetchPersonAsync.rejected, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Error;
         });
       })
-    /**  Create*/  
+      /**  Create*/
       .addCase(createPersonAsync.pending, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Loading;
@@ -128,11 +138,32 @@ export const peopleSlice = createSlice({
       })
       .addCase(createPersonAsync.fulfilled, (state, action) => {
         return produce(state, (draftState) => {
-            draftState.person.push(action.payload);
+          draftState.person.push(action.payload);
           draftState.status = Statuses.UpToDate;
         });
       })
-      .addCase(createPersonAsync.rejected , (state) => {
+      .addCase(createPersonAsync.rejected, (state) => {
+        return produce(state, (draftState) => {
+          draftState.status = Statuses.Error;
+        });
+      })
+
+      //Update
+      .addCase(updatePersonAsync.pending, (state) => {
+        return produce(state, (draftState) => {
+          draftState.status = Statuses.Loading;
+        });
+      })
+      .addCase(updatePersonAsync.fulfilled, (state, action) => {
+        return produce(state, (draftState) => {
+          const index = draftState.person.findIndex(
+            (person) => person.id === action.payload.person_id
+          );
+          draftState.person[index] = action.payload;
+          draftState.status = Statuses.UpToDate;
+        });
+      })
+      .addCase(updatePersonAsync.rejected, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Error;
         });
@@ -146,15 +177,15 @@ export const peopleSlice = createSlice({
       })
       .addCase(destroyPersonAsync.fulfilled, (state, action) => {
         return produce(state, (draftState) => {
-            draftState.person = action.payload;
+          draftState.person = action.payload;
           draftState.status = Statuses.UpToDate;
         });
       })
-      .addCase(destroyPersonAsync.rejected , (state) => {
+      .addCase(destroyPersonAsync.rejected, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Error;
         });
-      })
+      });
   },
 });
 
