@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { selectPerson, fetchPersonAsync, Statuses, selectStatus } from "./peopleSlice";
 import Person from './person';
 import { PersonState } from "./peopleSlice";
+import PersonForm from "./personForm";
 
 function People() {
   //usestate just to render containers for now
@@ -31,6 +32,7 @@ function People() {
         let {firstname, lastname, email, id} = person;
         return <Person key={person.id} {...person}/>
       })}
+      <PersonForm />
       </div>
   }
 

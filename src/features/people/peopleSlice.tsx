@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import produce from "immer";
 import { RootState } from "../../app/store";
-import { fetchPeople } from "./peopleAPI";
+import { fetchPeople, createPerson } from "./peopleAPI";
 
 export enum Statuses {
   Initial = "Not Fetched",
@@ -21,6 +21,15 @@ export interface PersonState {
   email?: string;
   created_at?: any;
   updated_at?: any;
+}
+
+export interface PersonFormData{
+    person: {
+        id? :string;
+        firstname: string;
+        lastname: string;
+        email: string;
+    }
 }
 
 export interface PeopleState {
@@ -50,6 +59,15 @@ export const fetchPersonAsync = createAsyncThunk(
   }
 );
 
+export const createPersonAsync = createAsyncThunk(
+    'people/createPerson',
+    async (payload: PersonFormData) => {
+        const response = await createPerson(payload);
+
+        return response;
+    }
+)
+
 
 // TODO
 // all using immer, not sure if correct way
@@ -64,20 +82,36 @@ export const peopleSlice = createSlice({
   //Async actions
   extraReducers: (builder) => {
     builder
+    /** fetches */
       .addCase(fetchPersonAsync.pending, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Loading;
         });
       })
-
       .addCase(fetchPersonAsync.fulfilled, (state, action) => {
         return produce(state, (draftState) => {
             draftState.person = action.payload;
           draftState.status = Statuses.UpToDate;
         });
       })
-
       .addCase(fetchPersonAsync.rejected , (state) => {
+        return produce(state, (draftState) => {
+          draftState.status = Statuses.Error;
+        });
+      })
+    /**  Update*/  
+      .addCase(createPersonAsync.pending, (state) => {
+        return produce(state, (draftState) => {
+          draftState.status = Statuses.Loading;
+        });
+      })
+      .addCase(createPersonAsync.fulfilled, (state, action) => {
+        return produce(state, (draftState) => {
+            draftState.person.push = action.payload;
+          draftState.status = Statuses.UpToDate;
+        });
+      })
+      .addCase(createPersonAsync.rejected , (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Error;
         });
