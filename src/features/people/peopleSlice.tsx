@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import produce from 'immer';
-import { RootState } from "../app/store";
+import { RootState } from "../../app/store";
 import { fetchPeople } from "./peopleAPI";
 
 export enum Statuses {
@@ -76,7 +76,7 @@ export const peopleSlice = createSlice({
 
 export const {} = peopleSlice.actions
 
-export const selectPerson = (state: RootState) => state.people.posts;
-export const selectStatus = (state: RootState) => state.person.posts;
+export const selectPerson = (state: RootState) => state.people.person;
+export const selectStatus = (state: RootState) => state.people.person;
 
 export default peopleSlice.reducer;

@@ -1,4 +1,4 @@
-import Cars from './cars';
+import Cars from '../cars';
 
 
 function Person(props: any) {
