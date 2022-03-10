@@ -99,7 +99,7 @@ export const peopleSlice = createSlice({
           draftState.status = Statuses.Error;
         });
       })
-    /**  Update*/  
+    /**  Create*/  
       .addCase(createPersonAsync.pending, (state) => {
         return produce(state, (draftState) => {
           draftState.status = Statuses.Loading;
@@ -107,7 +107,7 @@ export const peopleSlice = createSlice({
       })
       .addCase(createPersonAsync.fulfilled, (state, action) => {
         return produce(state, (draftState) => {
-            draftState.person.push = action.payload;
+            draftState.person.push(action.payload);
           draftState.status = Statuses.UpToDate;
         });
       })

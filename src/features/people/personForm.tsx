@@ -51,7 +51,7 @@ export function PersonForm() {
             type='text'
             className='form-control text-start'
             name='eMailinput'
-            value={fname}
+            value={eMail}
             onChange={(e) => setEmail(e.target.value)}
             />
 
